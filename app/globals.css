@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ios-bg: 220 20% 98%; /* #F9F9FB */
+    --ios-panel: 0 0% 100%; /* #FFFFFF */
+    --ios-panel-contrast: 0 0% 94.1%; /* #F0F0F0 */
+    --ios-blue: 214 100% 52.9%; /* #0A84FF */
+    --ios-border: 240 5.9% 90%; /* #E5E5EA */
+    --ios-text-primary: 0 0% 0%; /* #000000 */
+    --ios-text-secondary: 240 1.2% 54.5%; /* #8A8A8E */
+    --ios-green: 145 63.4% 49.2%; /* #34C759 */
+    --ios-orange: 36 100% 50%; /* #FF9500 */
+  }
+ 
+  .dark {
+    --ios-bg: 0 0% 0%; /* #000000 */
+    --ios-panel: 240 2.2% 11%; /* #1C1C1E */
+    --ios-panel-contrast: 240 2.1% 17.3%; /* #2C2C2E */
+    --ios-border: 240 1.9% 22%; /* #38383A */
+    --ios-text-primary: 0 0% 100%; /* #FFFFFF */
+    --ios-text-secondary: 240 1.1% 56.7%; /* #8D8D93 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-ios-border;
+  }
+  body {
+    @apply bg-ios-bg text-ios-text-primary;
+    @apply transition-colors duration-300;
+  }
+}
