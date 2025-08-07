@@ -32,7 +32,7 @@ export async function POST(request: Request) {
                 website: newPolicyForm.websiteUrl,
                 language: newPolicyForm.language,
                 content: content,
-                compliance: compliance,
+                compliance: compliance.join(','),
                 userId: session.user.id,
                 history: {
                     create: {

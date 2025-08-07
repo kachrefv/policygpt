@@ -64,7 +64,7 @@ export const PolicyDetailClient = ({ policy }: PolicyDetailClientProps) => {
                         <div>
                             <h3 className="font-semibold">Compliance</h3>
                             <div className="flex flex-wrap gap-2 mt-1">
-                                {policy.compliance.length > 0 ? policy.compliance.map(tag => (
+                                {policy.compliance && policy.compliance.length > 0 ? policy.compliance.split(',').map(tag => (
                                     <span key={tag} className="bg-ios-panel-contrast text-xs font-medium px-2 py-1 rounded-full">{tag}</span>
                                 )) : <span className="text-ios-text-secondary text-sm">N/A</span>}
                             </div>
