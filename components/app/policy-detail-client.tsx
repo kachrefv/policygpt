@@ -1,130 +1,120 @@
 "use client";
 
-import { useState } from "react";
-import { Policy, PolicyHistory } from "@prisma/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { EmbedModal } from "./embed-modal";
-
-// The type received by the client component after serialization from the server component.
-// Dates are converted to ISO strings.
-type SerializedPolicy = Omit<Policy, "createdAt" | "updatedAt"> & {
-    createdAt: string;
-    updatedAt: string;
-};
-
-type SerializedPolicyHistory = Omit<PolicyHistory, "createdAt"> & {
-    createdAt: string;
-};
-
-type PolicyWithHistory = SerializedPolicy & {
-    history: SerializedPolicyHistory[];
-};
+import { useState } from 'react';
+import Link from 'next/link';
+import { Policy, PolicyHistory } from '@prisma/client';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Download, Code } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { EmbedModal } from './embed-modal';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface PolicyDetailClientProps {
-    policy: PolicyWithHistory;
+    policy: Policy & { history: PolicyHistory[] };
 }
 
-export function PolicyDetailClient({ policy }: PolicyDetailClientProps) {
+export const PolicyDetailClient = ({ policy }: PolicyDetailClientProps) => {
     const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
 
     return (
-        <>
-            <EmbedModal
-                isOpen={isEmbedModalOpen}
-                onClose={() => setIsEmbedModalOpen(false)}
+        <div className="animate-fade-in">
+            <div className="mb-6">
+                <Link href="/dashboard" className="text-primary hover:underline text-sm flex items-center">
+                    <ArrowLeft className="h-4 w-4 mr-1" />
+                    Back to Dashboard
+                </Link>
+                <h1 className="text-3xl font-bold mt-2">{policy.type}</h1>
+                <p className="text-muted-foreground">{policy.website}</p>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-8">
+                <div className="flex-grow">
+                    <Card>
+                        <CardContent className="pt-6">
+                            <div 
+                                className="prose dark:prose-invert max-w-none"
+                                dangerouslySetInnerHTML={{ __html: policy.content }}
+                            />
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="mt-8">
+                        <CardHeader>
+                            <CardTitle>Version History</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-[100px]">Version</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Change Summary</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {policy.history.sort((a, b) => b.version - a.version).map(item => (
+                                        <TableRow key={item.id}>
+                                            <TableCell className="font-medium">{item.version}</TableCell>
+                                            <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
+                                            <TableCell>{item.change}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div className="w-full lg:w-80 flex-shrink-0">
+                    <Card className="sticky top-24">
+                        <CardContent className="p-6 space-y-4">
+                            <div>
+                                <h3 className="font-semibold text-card-foreground">Status</h3>
+                                <Badge className={cn(
+                                    'mt-1 w-full justify-center',
+                                    policy.status === 'Up-to-date' 
+                                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 border-transparent hover:bg-green-200' 
+                                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400 border-transparent hover:bg-amber-200'
+                                )}>
+                                    {policy.status}
+                                </Badge>
+                            </div>
+                            <div className="border-t"></div>
+                            <div>
+                                <h3 className="font-semibold text-card-foreground">Last Updated</h3>
+                                <p className="text-sm text-muted-foreground">{new Date(policy.updatedAt).toLocaleDateString()}</p>
+                            </div>
+                            <div className="border-t"></div>
+                            <div>
+                                <h3 className="font-semibold text-card-foreground">Compliance</h3>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {policy.compliance && policy.compliance.length > 0 ? policy.compliance.split(',').map(tag => (
+                                        <Badge key={tag} variant="secondary">{tag.trim()}</Badge>
+                                    )) : <p className="text-sm text-muted-foreground">N/A</p>}
+                                </div>
+                            </div>
+                            <div className="border-t"></div>
+                            <div className="space-y-2 pt-2">
+                                <Button onClick={() => setIsEmbedModalOpen(true)} className="w-full">
+                                    <Code className="h-4 w-4 mr-2" />
+                                    Get Embed Code
+                                </Button>
+                                <Button variant="secondary" className="w-full">
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Download PDF
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+            <EmbedModal 
+                isOpen={isEmbedModalOpen} 
+                onClose={() => setIsEmbedModalOpen(false)} 
                 policyId={policy.id}
             />
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle>Policy Details</CardTitle>
-                                <CardDescription>
-                                    Overview of your {policy.type} policy for {policy.website}.
-                                </CardDescription>
-                            </div>
-                            <Button onClick={() => setIsEmbedModalOpen(true)}>Embed</Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="grid gap-4 md:grid-cols-2">
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Website</p>
-                            <p>{policy.website}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Policy Type</p>
-                            <p>{policy.type}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Status</p>
-                            <Badge variant={policy.status === 'active' ? 'default' : 'secondary'}>{policy.status}</Badge>
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Language</p>
-                            <p>{policy.language}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Last Updated</p>
-                            <p>{new Date(policy.updatedAt).toLocaleDateString()}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Created On</p>
-                            <p>{new Date(policy.createdAt).toLocaleDateString()}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Policy Content</CardTitle>
-                        <CardDescription>The full text of your generated policy.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="prose max-w-none rounded-md border bg-muted/40 p-4 dark:prose-invert">
-                            <pre className="whitespace-pre-wrap bg-transparent p-0 font-sans text-sm">{policy.content}</pre>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Version History</CardTitle>
-                        <CardDescription>Review the changes made to this policy over time.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Version</TableHead>
-                                    <TableHead>Change Description</TableHead>
-                                    <TableHead className="text-right">Date</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {policy.history.length > 0 ? (
-                                    policy.history.map((entry) => (
-                                        <TableRow key={entry.id}>
-                                            <TableCell className="font-medium">{entry.version}</TableCell>
-                                            <TableCell>{entry.change}</TableCell>
-                                            <TableCell className="text-right">{new Date(entry.createdAt).toLocaleDateString()}</TableCell>
-                                        </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={3} className="text-center">
-                                            No version history found.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            </div>
-        </>
+        </div>
     );
-}
+};
