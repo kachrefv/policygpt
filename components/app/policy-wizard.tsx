@@ -73,7 +73,7 @@ export const PolicyWizard = () => {
                 {step < 5 ? (
                     <Button onClick={() => setStep(s => s + 1)}>Next</Button>
                 ) : (
-                    <Button variant="success" onClick={handleGenerate} disabled={isLoading}>
+                    <Button onClick={handleGenerate} disabled={isLoading}>
                         {isLoading ? 'Generating...' : 'Generate Policy'}
                     </Button>
                 )}

@@ -33,6 +33,7 @@ export async function POST(request: Request) {
                 language: newPolicyForm.language,
                 content: content,
                 compliance: compliance.join(','),
+                status: 'Up-to-date',
                 userId: session.user.id,
                 history: {
                     create: {
