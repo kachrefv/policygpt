@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from 'react';
 import Link from 'next/link';
 import { Policy, PolicyHistory } from '@prisma/client';
@@ -54,7 +52,7 @@ export const PolicyDetailClient = ({ policy }: PolicyDetailClientProps) => {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {policy.history.sort((a, b) => b.version - a.version).map(item => (
+                                    {policy.history.sort((a, b) => parseFloat(b.version) - parseFloat(a.version)).map(item => (
                                         <TableRow key={item.id}>
                                             <TableCell className="font-medium">{item.version}</TableCell>
                                             <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
