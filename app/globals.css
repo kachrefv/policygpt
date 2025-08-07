@@ -23,14 +23,14 @@
     --ios-text-primary: hsl(0 0% 100%); /* #FFFFFF */
     --ios-text-secondary: hsl(240 1.1% 56.7%); /* #8D8D93 */
   }
-}
 
-@layer base {
   * {
-    @apply border-ios-border;
+    border-color: var(--ios-border);
   }
+  
   body {
-    @apply bg-ios-bg text-ios-text-primary;
+    background-color: var(--ios-bg);
+    color: var(--ios-text-primary);
     @apply transition-colors duration-300;
   }
 }
