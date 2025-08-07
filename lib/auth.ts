@@ -1,12 +1,9 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
-
 import prisma from "@/lib/prisma";
+import bcrypt from 'bcrypt';
 
 export const authOptions: AuthOptions = {
-    adapter: PrismaAdapter(prisma),
     providers: [
         CredentialsProvider({
             name: 'credentials',
@@ -25,7 +22,7 @@ export const authOptions: AuthOptions = {
                     }
                 });
 
-                if (!user || !user?.hashedPassword) {
+                if (!user || !user.hashedPassword) {
                     throw new Error('Invalid credentials');
                 }
 
@@ -42,32 +39,26 @@ export const authOptions: AuthOptions = {
             }
         })
     ],
-    debug: process.env.NODE_ENV === 'development',
     session: {
         strategy: 'jwt',
     },
     callbacks: {
-        session: ({ session, token }) => {
-            if (token) {
-                session.user.id = token.id;
-                session.user.name = token.name;
-                session.user.email = token.email;
-                session.user.image = token.picture;
-            }
-            return session;
-        },
-        jwt: async ({ token, user }) => {
+        jwt: ({ token, user }) => {
             if (user) {
                 token.id = user.id;
-                token.name = user.name;
-                token.email = user.email;
-                token.picture = user.image;
             }
             return token;
         },
+        session: ({ session, token }) => {
+            if (token && session.user) {
+                session.user.id = token.id as string;
+            }
+            return session;
+        },
     },
-    secret: process.env.NEXTAUTH_SECRET,
     pages: {
         signIn: '/login',
-    }
+    },
+    secret: process.env.NEXTAUTH_SECRET,
+    debug: process.env.NODE_ENV === 'development',
 };
