@@ -18,12 +18,7 @@ async function getPolicy(policyId: string, userId: string) {
         return null;
     }
 
-    return {
-        ...policy,
-        createdAt: policy.createdAt.toISOString(),
-        updatedAt: policy.updatedAt.toISOString(),
-        history: policy.history.map(h => ({...h, createdAt: h.createdAt.toISOString()}))
-    };
+    return policy;
 }
 
 export default async function PolicyDetailPage({ params }: { params: { policyId: string } }) {
