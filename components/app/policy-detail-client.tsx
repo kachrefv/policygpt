@@ -1,93 +1,130 @@
 "use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Policy, PolicyHistory } from '@prisma/client';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Download, Code } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { EmbedModal } from './embed-modal';
+import { useState } from "react";
+import { Policy, PolicyHistory } from "@prisma/client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { EmbedModal } from "./embed-modal";
+
+// The type received by the client component after serialization from the server component.
+// Dates are converted to ISO strings.
+type SerializedPolicy = Omit<Policy, "createdAt" | "updatedAt"> & {
+    createdAt: string;
+    updatedAt: string;
+};
+
+type SerializedPolicyHistory = Omit<PolicyHistory, "createdAt"> & {
+    createdAt: string;
+};
+
+type PolicyWithHistory = SerializedPolicy & {
+    history: SerializedPolicyHistory[];
+};
 
 interface PolicyDetailClientProps {
-    policy: Policy & { history: PolicyHistory[] };
+    policy: PolicyWithHistory;
 }
 
-export const PolicyDetailClient = ({ policy }: PolicyDetailClientProps) => {
+export function PolicyDetailClient({ policy }: PolicyDetailClientProps) {
     const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
 
     return (
-        <div className="animate-fade-in">
-            <div className="mb-6">
-                <Link href="/dashboard" className="text-ios-blue hover:underline text-sm flex items-center">
-                    <ArrowLeft className="h-4 w-4 mr-1" />
-                    Back to Dashboard
-                </Link>
-                <h1 className="text-3xl font-bold mt-2">{policy.type}</h1>
-                <p className="text-ios-text-secondary">{policy.website}</p>
-            </div>
-
-            <div className="flex flex-col lg:flex-row gap-8">
-                <div className="flex-grow">
-                    <div 
-                        className="bg-ios-panel p-6 rounded-lg border prose dark:prose-invert max-w-none prose-h2:font-semibold prose-p:text-ios-text-secondary"
-                        dangerouslySetInnerHTML={{ __html: policy.content }}
-                    />
-                    
-                    <h2 className="text-2xl font-bold mt-8 mb-4">Version History</h2>
-                    <div className="space-y-3">
-                        {policy.history.map(item => (
-                            <div key={item.id} className="bg-ios-panel p-4 rounded-lg border">
-                                <p className="font-semibold">Version {item.version} - {new Date(item.createdAt).toLocaleDateString()}</p>
-                                <p className="mt-2 text-ios-text-secondary">{item.change}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="w-full lg:w-80 flex-shrink-0">
-                    <div className="bg-ios-panel p-4 rounded-lg border space-y-4 sticky top-24">
-                        <div>
-                            <h3 className="font-semibold">Status</h3>
-                            <span className={cn(
-                                'mt-1 inline-block px-2 py-1 text-xs font-medium rounded-full',
-                                policy.status === 'Up-to-date' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'
-                            )}>
-                                {policy.status}
-                            </span>
-                        </div>
-                        <div className="border-t my-2"></div>
-                        <div>
-                            <h3 className="font-semibold">Last Updated</h3>
-                            <p className="text-ios-text-secondary">{new Date(policy.updatedAt).toLocaleDateString()}</p>
-                        </div>
-                        <div className="border-t my-2"></div>
-                        <div>
-                            <h3 className="font-semibold">Compliance</h3>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                                {policy.compliance && policy.compliance.length > 0 ? policy.compliance.split(',').map(tag => (
-                                    <span key={tag} className="bg-ios-panel-contrast text-xs font-medium px-2 py-1 rounded-full">{tag}</span>
-                                )) : <span className="text-ios-text-secondary text-sm">N/A</span>}
-                            </div>
-                        </div>
-                        <div className="border-t my-2"></div>
-                        <div className="space-y-2">
-                            <Button onClick={() => setIsEmbedModalOpen(true)} className="w-full">
-                                <Code className="h-4 w-4 mr-2" />
-                                Get Embed Code
-                            </Button>
-                            <Button variant="secondary" className="w-full">
-                                <Download className="h-4 w-4 mr-2" />
-                                Download PDF
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <EmbedModal 
-                isOpen={isEmbedModalOpen} 
-                onClose={() => setIsEmbedModalOpen(false)} 
+        <>
+            <EmbedModal
+                isOpen={isEmbedModalOpen}
+                onClose={() => setIsEmbedModalOpen(false)}
                 policyId={policy.id}
             />
-        </div>
+            <div className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>Policy Details</CardTitle>
+                                <CardDescription>
+                                    Overview of your {policy.type} policy for {policy.website}.
+                                </CardDescription>
+                            </div>
+                            <Button onClick={() => setIsEmbedModalOpen(true)}>Embed</Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Website</p>
+                            <p>{policy.website}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Policy Type</p>
+                            <p>{policy.type}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Status</p>
+                            <Badge variant={policy.status === 'active' ? 'default' : 'secondary'}>{policy.status}</Badge>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Language</p>
+                            <p>{policy.language}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Last Updated</p>
+                            <p>{new Date(policy.updatedAt).toLocaleDateString()}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Created On</p>
+                            <p>{new Date(policy.createdAt).toLocaleDateString()}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Policy Content</CardTitle>
+                        <CardDescription>The full text of your generated policy.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="prose max-w-none rounded-md border bg-muted/40 p-4 dark:prose-invert">
+                            <pre className="whitespace-pre-wrap bg-transparent p-0 font-sans text-sm">{policy.content}</pre>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Version History</CardTitle>
+                        <CardDescription>Review the changes made to this policy over time.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Version</TableHead>
+                                    <TableHead>Change Description</TableHead>
+                                    <TableHead className="text-right">Date</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {policy.history.length > 0 ? (
+                                    policy.history.map((entry) => (
+                                        <TableRow key={entry.id}>
+                                            <TableCell className="font-medium">{entry.version}</TableCell>
+                                            <TableCell>{entry.change}</TableCell>
+                                            <TableCell className="text-right">{new Date(entry.createdAt).toLocaleDateString()}</TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={3} className="text-center">
+                                            No version history found.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </div>
+        </>
     );
-};
+}
