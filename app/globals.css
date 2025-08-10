@@ -4,33 +4,75 @@
 
 @layer base {
   :root {
-    --ios-bg: hsl(220 20% 98%); /* #F9F9FB */
-    --ios-panel: hsl(0 0% 100%); /* #FFFFFF */
-    --ios-panel-contrast: hsl(0 0% 94.1%); /* #F0F0F0 */
-    --ios-blue: hsl(214 100% 52.9%); /* #0A84FF */
-    --ios-border: hsl(240 5.9% 90%); /* #E5E5EA */
-    --ios-text-primary: hsl(0 0% 0%); /* #000000 */
-    --ios-text-secondary: hsl(240 1.2% 54.5%); /* #8A8A8E */
-    --ios-green: hsl(145 63.4% 49.2%); /* #34C759 */
-    --ios-orange: hsl(36 100% 50%); /* #FF9500 */
+    --ios-bg: 220 20% 98%; /* #F9F9FB */
+    --ios-panel: 0 0% 100%; /* #FFFFFF */
+    --ios-panel-contrast: 0 0% 94.1%; /* #F0F0F0 */
+    --ios-blue: 214 100% 52.9%; /* #0A84FF */
+    --ios-border: 240 5.9% 90%; /* #E5E5EA */
+    --ios-text-primary: 0 0% 0%; /* #000000 */
+    --ios-text-secondary: 240 1.2% 54.5%; /* #8A8A8E */
+    --ios-green: 145 63.4% 49.2%; /* #34C759 */
+    --ios-orange: 36 100% 50%; /* #FF9500 */
+
+    /* Shadcn/ui variables mapped to iOS palette */
+    --background: var(--ios-bg);
+    --foreground: var(--ios-text-primary);
+    --muted: var(--ios-panel-contrast);
+    --muted-foreground: var(--ios-text-secondary);
+    --popover: var(--ios-panel);
+    --popover-foreground: var(--ios-text-primary);
+    --border: var(--ios-border);
+    --input: var(--ios-panel-contrast);
+    --card: var(--ios-panel);
+    --card-foreground: var(--ios-text-primary);
+    --primary: var(--ios-blue);
+    --primary-foreground: 0 0% 100%; /* White */
+    --secondary: var(--ios-panel-contrast);
+    --secondary-foreground: var(--ios-text-primary);
+    --accent: var(--ios-panel-contrast);
+    --accent-foreground: var(--ios-text-primary);
+    --destructive: 0 84.2% 60.2%; /* A shade of red, similar to red-500 */
+    --destructive-foreground: 0 0% 100%; /* White */
+    --ring: var(--ios-blue);
+    --radius: 0.5rem; /* For rounded corners consistent with shadcn */
   }
  
   .dark {
-    --ios-bg: hsl(0 0% 0%); /* #000000 */
-    --ios-panel: hsl(240 2.2% 11%); /* #1C1C1E */
-    --ios-panel-contrast: hsl(240 2.1% 17.3%); /* #2C2C2E */
-    --ios-border: hsl(240 1.9% 22%); /* #38383A */
-    --ios-text-primary: hsl(0 0% 100%); /* #FFFFFF */
-    --ios-text-secondary: hsl(240 1.1% 56.7%); /* #8D8D93 */
+    --ios-bg: 0 0% 0%; /* #000000 */
+    --ios-panel: 240 2.2% 11%; /* #1C1C1E */
+    --ios-panel-contrast: 240 2.1% 17.3%; /* #2C2C2E */
+    --ios-border: 240 1.9% 22%; /* #38383A */
+    --ios-text-primary: 0 0% 100%; /* #FFFFFF */
+    --ios-text-secondary: 240 1.1% 56.7%; /* #8D8D93 */
+
+    /* Shadcn/ui variables mapped to iOS palette (dark mode) */
+    --background: var(--ios-bg);
+    --foreground: var(--ios-text-primary);
+    --muted: var(--ios-panel-contrast);
+    --muted-foreground: var(--ios-text-secondary);
+    --popover: var(--ios-panel);
+    --popover-foreground: var(--ios-text-primary);
+    --border: var(--ios-border);
+    --input: var(--ios-panel-contrast);
+    --card: var(--ios-panel);
+    --card-foreground: var(--ios-text-primary);
+    --primary: var(--ios-blue);
+    --primary-foreground: 0 0% 100%;
+    --secondary: var(--ios-panel-contrast);
+    --secondary-foreground: var(--ios-text-primary);
+    --accent: var(--ios-panel-contrast);
+    --accent-foreground: var(--ios-text-primary);
+    --destructive: 0 72.2% 50.6%; /* Darker red for dark mode */
+    --destructive-foreground: 0 0% 100%;
   }
 
   * {
-    border-color: var(--ios-border);
+    border-color: hsl(var(--border)); /* Use shadcn border */
   }
   
   body {
-    background-color: var(--ios-bg);
-    color: var(--ios-text-primary);
+    background-color: hsl(var(--background)); /* Use shadcn background */
+    color: hsl(var(--foreground)); /* Use shadcn foreground */
     @apply transition-colors duration-300;
   }
 }

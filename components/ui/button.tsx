@@ -12,7 +12,7 @@ const buttonVariants = cva(
         primary: "bg-ios-blue text-white hover:opacity-90",
         secondary: "bg-ios-panel-contrast hover:bg-ios-border",
         ghost: "hover:bg-ios-panel-contrast",
-        destructive: "bg-red-500 text-white hover:bg-red-600",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         success: "bg-ios-green text-white hover:opacity-90",
       },
       size: {

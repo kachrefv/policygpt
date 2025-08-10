@@ -14,6 +14,7 @@ const config: Config = {
         mono: ['var(--font-roboto-mono)', 'monospace'],
       },
       colors: {
+        // Custom iOS palette colors
         'ios-bg': 'hsl(var(--ios-bg))',
         'ios-panel': 'hsl(var(--ios-panel))',
         'ios-panel-contrast': 'hsl(var(--ios-panel-contrast))',
@@ -23,6 +24,46 @@ const config: Config = {
         'ios-text-secondary': 'hsl(var(--ios-text-secondary))',
         'ios-green': 'hsl(var(--ios-green))',
         'ios-orange': 'hsl(var(--ios-orange))',
+
+        // Shadcn/ui mapped colors
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         fadeIn: {
